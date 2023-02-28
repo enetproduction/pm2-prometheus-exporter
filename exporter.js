@@ -120,7 +120,7 @@ const exporter = () => {
     switch (request.url) {
       case '/':
         return res.end('<html>PM2 metrics: <a href="/metrics">/metrics</a></html>');
-      case '/metrics':
+      case '/_health/metrics':
         return metrics().then(data => res.end(data));
       default:
         return res.end('404');
