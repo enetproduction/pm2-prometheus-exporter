@@ -1,3 +1,5 @@
+/* eslint-disable no-continue */
+/* eslint-disable no-restricted-syntax */
 const http = require('http');
 const prom = require('prom-client');
 const pm2 = require('pm2');
@@ -14,7 +16,7 @@ const map = [
   ['uptime', 'Process uptime'],
   ['instances', 'Process instances'],
   ['restarts', 'Process restarts'],
-  ['prev_restart_delay', 'Previous restart delay']
+  ['prev_restart_delay', 'Previous restart delay'],
 ];
 
 const pm2c = (cmd, args = []) => new Promise((resolve, reject) => {
@@ -32,12 +34,14 @@ const metrics = () => {
       name: `${prefix}_${m[0]}`,
       help: m[1],
       labelNames: labels,
-      registers: [registry]
+      registers: [registry],
     });
   }
 
   return pm2c('list')
     .then(list => {
+      list = list.filter((p) => p.name !== '@enp/metrics');
+
       for (const p of list) {
         logger.debug(p, p.exec_interpreter, '>>>>>>');
         const conf = {
@@ -46,7 +50,7 @@ const metrics = () => {
           version: p.pm2_env.version ? p.pm2_env.version : 'N/A',
           instance: p.pm2_env.NODE_APP_INSTANCE,
           interpreter: p.pm2_env.exec_interpreter,
-          node_version: p.pm2_env.node_version
+          node_version: p.pm2_env.node_version,
         };
 
         const values = {
@@ -56,7 +60,7 @@ const metrics = () => {
           uptime: Math.round((Date.now() - p.pm2_env.pm_uptime) / 1000),
           instances: p.pm2_env.instances || 1,
           restarts: p.pm2_env.restart_time,
-          prev_restart_delay: p.pm2_env.prev_restart_delay
+          prev_restart_delay: p.pm2_env.prev_restart_delay,
         };
 
         const names = Object.keys(p.pm2_env.axm_monitor);
@@ -86,7 +90,7 @@ const metrics = () => {
                 name: metricName,
                 help: name,
                 labelNames: labels,
-                registers: [registry]
+                registers: [registry],
               });
             }
 
