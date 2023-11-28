@@ -40,7 +40,7 @@ const metrics = () => {
 
   return pm2c('list')
     .then(list => {
-      list = list.filter((p) => p.name !== '@enp/metrics');
+      list = list.filter((p) => p.name !== '@enp/pm2-metrics');
 
       for (const p of list) {
         logger.debug(p, p.exec_interpreter, '>>>>>>');
