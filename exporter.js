@@ -8,7 +8,7 @@ const logger = require('pino')();
 const io = require('pmx');
 
 const prefix = 'pm2';
-const labels = ['id', 'name', 'instance', 'version', 'interpreter', 'node_version'];
+const labels = ['id', 'name', 'instance', 'dc', 'role', 'env', 'scope'];
 const map = [
   ['up', 'Is the process running'],
   ['cpu', 'Process cpu usage'],
