@@ -38,6 +38,10 @@ const metrics = () => {
     });
   }
 
+  // get DT_TAGS from env and replace spaces with &
+  const DT_TAGS = (process.env.DT_TAGS || '').replace(/ /g, '&');
+  const dtParams = new URLSearchParams(`?${DT_TAGS}`);
+
   return pm2c('list')
     .then(list => {
       list = list.filter((p) => p.name !== '@enp/pm2-metrics');
@@ -46,11 +50,12 @@ const metrics = () => {
         logger.debug(p, p.exec_interpreter, '>>>>>>');
         const conf = {
           id: p.pm_id,
-          name: process.env.ENP_NODE_HOST ? process.env.ENP_NODE_HOST : p.name,
-          version: p.pm2_env.version ? p.pm2_env.version : 'N/A',
+          name: p.name,
           instance: p.pm2_env.NODE_APP_INSTANCE,
-          interpreter: p.pm2_env.exec_interpreter,
-          node_version: p.pm2_env.node_version,
+          dc: dtParams.get('DC') || 'unknown',
+          role: dtParams.get('AppRole') || 'unknown',
+          env: dtParams.get('AppEnv') || 'unknown',
+          scope: dtParams.get('AppScope') || 'unknown',
         };
 
         const values = {
